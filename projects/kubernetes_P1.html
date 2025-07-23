@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes Project - AASIF MOHD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f0f23;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .header .author {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #cccccc;
+        }
+
+        .header .description {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #cccccc;
+        }
+
+        .section {
+            margin-bottom: 50px;
+            padding: 30px;
+            background-color: #1e1e3f;
+            border-radius: 8px;
+            border: 1px solid #333366;
+        }
+
+        .section h2 {
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            margin-top: 30px;
+            color: #ffffff;
+        }
+
+        .section h4 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .section p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #cccccc;
+        }
+
+        .section ul {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+
+        .section li {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #cccccc;
+        }
+
+        .image-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #444;
+        }
+
+        .image-caption {
+            font-size: 1rem;
+            color: #aaa;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .feature-item {
+            background-color: #252547;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #333366;
+        }
+
+        .feature-item h4 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .feature-item p {
+            font-size: 1.1rem;
+            color: #cccccc;
+        }
+
+        .commands {
+            background-color: #000011;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #333366;
+        }
+
+        .commands code {
+            color: #00ff00;
+            display: block;
+            margin: 8px 0;
+            font-size: 1.1rem;
+        }
+
+        .qa-section {
+            margin: 30px 0;
+        }
+
+        .qa-item {
+            background-color: #252547;
+            margin-bottom: 20px;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #333366;
+        }
+
+        .question {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .answer {
+            font-size: 1.1rem;
+            color: #cccccc;
+        }
+
+        .architecture-diagram {
+            background-color: #252547;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 30px 0;
+            border: 1px solid #333366;
+        }
+
+        .node-box {
+            background-color: #1e1e3f;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 6px;
+            border-left: 4px solid #00ff00;
+            border: 1px solid #333366;
+        }
+
+        .node-box h4 {
+            color: #00ff00;
+            margin-bottom: 10px;
+        }
+
+        .service-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .service-type {
+            background-color: #252547;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #333366;
+        }
+
+        .service-type h4 {
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .service-type p {
+            color: #cccccc;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="margin-bottom: 20px;">
+            <a href="../index.html#portfolio" style="display: inline-block; padding: 10px 20px; background-color: #252547; color: #ffffff; text-decoration: none; border-radius: 5px; border: 1px solid #333366; font-size: 1rem;">← Back to Portfolio</a>
+        </div>
+
+        <div class="header">
+            <h1>Kubernetes Project</h1>
+            <div class="author">NAME - AASIF MOHD</div>
+            <div class="description">
+                Complete guide to Kubernetes container orchestration platform for enterprise-level application deployment with auto-scaling, auto-healing, and cluster management.
+            </div>
+            <div style="margin-top: 20px; padding: 15px; background-color: #252547; border-radius: 8px; border: 1px solid #333366;">
+                <p style="color: #cccccc; font-size: 1rem; margin: 0;"><strong>Source:</strong> I completed the Kubernetes course by Abhishek Veeramalla and created these comprehensive notes during my learning journey. This webpage is based on those notes and my hands-on experience with the concepts.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Why Kubernetes?</h2>
+            <p>Kubernetes is a group of connected machines called nodes designed to run applications at the enterprise level reliably and efficiently.</p>
+            
+            <div class="image-container">
+                <svg width="600" height="300" viewBox="0 0 600 300">
+                    <rect width="600" height="300" fill="#1e1e3f" stroke="#333366" stroke-width="2"/>
+                    <rect x="50" y="50" width="120" height="80" fill="#00ff00" opacity="0.3" stroke="#00ff00"/>
+                    <text x="110" y="95" text-anchor="middle" fill="#ffffff" font-size="12">Auto Scaling</text>
+                    
+                    <rect x="200" y="50" width="120" height="80" fill="#ff6b6b" opacity="0.3" stroke="#ff6b6b"/>
+                    <text x="260" y="95" text-anchor="middle" fill="#ffffff" font-size="12">Auto Healing</text>
+                    
+                    <rect x="350" y="50" width="120" height="80" fill="#4ecdc4" opacity="0.3" stroke="#4ecdc4"/>
+                    <text x="410" y="95" text-anchor="middle" fill="#ffffff" font-size="12">Node Failure</text>
+                    
+                    <rect x="200" y="170" width="200" height="80" fill="#ffd93d" opacity="0.3" stroke="#ffd93d"/>
+                    <text x="300" y="215" text-anchor="middle" fill="#ffffff" font-size="12">Kubernetes Cluster</text>
+                </svg>
+                <div class="image-caption">Kubernetes Core Features</div>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h4>Auto Scaling</h4>
+                    <p>If the traffic or workload increases, Kubernetes will automatically create more containers to handle it.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Auto Healing</h4>
+                    <p>If a container stops working or crashes, Kubernetes will detect it and create a new one to replace it.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Node Failure Handling</h4>
+                    <p>If one machine (node) has a problem, Kubernetes can move the container to another healthy machine.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Why not just Docker?</h4>
+                    <p>Docker alone is useful but doesn't have advanced features like auto-scaling or self-healing. That's why, in large companies, Kubernetes is used along with Docker to manage containers better.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Kubernetes Architecture</h2>
+            
+            <div class="image-container">
+                <svg width="700" height="400" viewBox="0 0 700 400">
+                    <rect width="700" height="400" fill="#1e1e3f" stroke="#333366" stroke-width="2"/>
+                    
+                    <!-- Master Node -->
+                    <rect x="50" y="50" width="200" height="150" fill="#ff6b6b" opacity="0.3" stroke="#ff6b6b" stroke-width="2"/>
+                    <text x="150" y="35" text-anchor="middle" fill="#ffffff" font-weight="bold" font-size="14">Master Node</text>
+                    <rect x="70" y="70" width="60" height="25" fill="#252547" stroke="#fff"/>
+                    <text x="100" y="85" text-anchor="middle" fill="#fff" font-size="10">API Server</text>
+                    <rect x="140" y="70" width="60" height="25" fill="#252547" stroke="#fff"/>
+                    <text x="170" y="85" text-anchor="middle" fill="#fff" font-size="10">Scheduler</text>
+                    <rect x="70" y="110" width="60" height="25" fill="#252547" stroke="#fff"/>
+                    <text x="100" y="125" text-anchor="middle" fill="#fff" font-size="10">etcd</text>
+                    <rect x="140" y="110" width="60" height="25" fill="#252547" stroke="#fff"/>
+                    <text x="170" y="125" text-anchor="middle" fill="#fff" font-size="10">Controller</text>
+                    
+                    <!-- Worker Node 1 -->
+                    <rect x="300" y="50" width="150" height="150" fill="#00ff00" opacity="0.3" stroke="#00ff00" stroke-width="2"/>
+                    <text x="375" y="35" text-anchor="middle" fill="#ffffff" font-weight="bold" font-size="14">Worker Node</text>
+                    <rect x="320" y="70" width="50" height="25" fill="#252547" stroke="#fff"/>
+                    <text x="345" y="85" text-anchor="middle" fill="#fff" font-size="10">Kubelet</text>
+                    <rect x="380" y="70" width="50" height="25" fill="#252547" stroke="#fff"/>
+                    <text x="405" y="85" text-anchor="middle" fill="#fff" font-size="10">Proxy</text>
+                    <rect x="320" y="120" width="110" height="40" fill="#4ecdc4" opacity="0.5" stroke="#4ecdc4"/>
+                    <text x="375" y="145" text-anchor="middle" fill="#fff" font-size="12">Pods</text>
+                    
+                    <!-- Worker Node 2 -->
+                    <rect x="500" y="50" width="150" height="150" fill="#00ff00" opacity="0.3" stroke="#00ff00" stroke-width="2"/>
+                    <text x="575" y="35" text-anchor="middle" fill="#ffffff" font-weight="bold" font-size="14">Worker Node</text>
+                    <rect x="520" y="70" width="50" height="25" fill="#252547" stroke="#fff"/>
+                    <text x="545" y="85" text-anchor="middle" fill="#fff" font-size="10">Kubelet</text>
+                    <rect x="580" y="70" width="50" height="25" fill="#252547" stroke="#fff"/>
+                    <text x="605" y="85" text-anchor="middle" fill="#fff" font-size="10">Proxy</text>
+                    <rect x="520" y="120" width="110" height="40" fill="#4ecdc4" opacity="0.5" stroke="#4ecdc4"/>
+                    <text x="575" y="145" text-anchor="middle" fill="#fff" font-size="12">Pods</text>
+                    
+                    <!-- Connections -->
+                    <line x1="250" y1="125" x2="300" y2="125" stroke="#fff" stroke-width="2"/>
+                    <line x1="250" y1="125" x2="500" y2="125" stroke="#fff" stroke-width="2"/>
+                    
+                    <text x="350" y="280" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="bold">Kubernetes Cluster</text>
+                </svg>
+                <div class="image-caption">Kubernetes Architecture Diagram</div>
+            </div>
+
+            <div class="architecture-diagram">
+                <div class="node-box">
+                    <h4>Cluster</h4>
+                    <p>A group of machines (nodes) that run your applications.</p>
+                </div>
+                
+                <div class="node-box">
+                    <h4>Master Node (Control Plane)</h4>
+                    <p>Makes decisions about the cluster (like scheduling and managing the state). Key components:</p>
+                    <ul>
+                        <li>API Server – Entry point to the cluster</li>
+                        <li>Scheduler – Decides where to run new pods</li>
+                        <li>Controller Manager – Handles tasks like restarting failed pods</li>
+                        <li>etcd – Stores all cluster data (like a database)</li>
+                    </ul>
+                </div>
+                
+                <div class="node-box">
+                    <h4>Worker Nodes</h4>
+                    <p>Where the actual applications (pods/containers) run. Key components:</p>
+                    <ul>
+                        <li>Kubelet – Communicates with the master and runs pods</li>
+                        <li>Kube Proxy – Manages networking and load balancing</li>
+                        <li>Container Runtime – Runs the containers (like Docker or containerd)</li>
+                    </ul>
+                </div>
+                
+                <div class="node-box">
+                    <h4>Pods</h4>
+                    <p>The smallest unit in Kubernetes, holding one or more containers.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Setting up Minikube</h2>
+            <p>I have installed minikube and kubectl for learning purposes. Here are essential debugging commands:</p>
+            
+            <div class="image-container">
+                <svg width="600" height="200" viewBox="0 0 600 200">
+                    <rect width="600" height="200" fill="#000011" stroke="#00ff00" stroke-width="2"/>
+                    <text x="20" y="30" fill="#00ff00" font-family="monospace" font-size="12">$ kubectl get nodes</text>
+                    <text x="20" y="50" fill="#fff" font-family="monospace" font-size="11">NAME       STATUS   ROLES    AGE   VERSION</text>
+                    <text x="20" y="70" fill="#fff" font-family="monospace" font-size="11">minikube   Ready    control-plane   40m   v1.33.1</text>
+                    <text x="20" y="100" fill="#00ff00" font-family="monospace" font-size="12">$ minikube start</text>
+                    <text x="20" y="120" fill="#ffd93d" font-family="monospace" font-size="11">😄 minikube v1.36.0 on Ubuntu 24.04</text>
+                    <text x="20" y="140" fill="#ffd93d" font-family="monospace" font-size="11">✨ Using the docker driver based on existing profile</text>
+                    <text x="20" y="160" fill="#ffd93d" font-family="monospace" font-size="11">🚀 Starting "minikube" primary control-plane node</text>
+                </svg>
+                <div class="image-caption">Minikube Setup Terminal Output</div>
+            </div>
+            
+            <div class="commands">
+                <code>kubectl describe pod nginx</code>
+                <code>kubectl logs nginx</code>
+                <code>kubectl get all</code>
+            </div>
+            
+            <p>These commands help debug pods and check their information. If there are no logs, nothing will be shown.</p>
+        </div>
+
+        <div class="section">
+            <h2>Container vs Pod vs Deployment</h2>
+            
+            <div class="image-container">
+                <svg width="600" height="250" viewBox="0 0 600 250">
+                    <rect width="600" height="250" fill="#1e1e3f" stroke="#333366" stroke-width="2"/>
+                    
+                    <!-- Container -->
+                    <rect x="50" y="50" width="120" height="80" fill="#ff6b6b" opacity="0.6" stroke="#ff6b6b" stroke-width="2"/>
+                    <text x="110" y="95" text-anchor="middle" fill="#ffffff" font-weight="bold">Container</text>
+                    <text x="110" y="110" text-anchor="middle" fill="#ffffff" font-size="10">The actual app</text>
+                    
+                    <!-- Pod -->
+                    <rect x="240" y="40" width="120" height="100" fill="#00ff00" opacity="0.6" stroke="#00ff00" stroke-width="2"/>
+                    <text x="300" y="95" text-anchor="middle" fill="#ffffff" font-weight="bold">Pod</text>
+                    <text x="300" y="110" text-anchor="middle" fill="#ffffff" font-size="10">Wraps containers</text>
+                    <rect x="260" y="60" width="80" height="30" fill="#ff6b6b" opacity="0.4" stroke="#ff6b6b"/>
+                    <text x="300" y="78" text-anchor="middle" fill="#ffffff" font-size="9">Container</text>
+                    
+                    <!-- Deployment -->
+                    <rect x="430" y="30" width="120" height="120" fill="#4ecdc4" opacity="0.6" stroke="#4ecdc4" stroke-width="2"/>
+                    <text x="490" y="55" text-anchor="middle" fill="#ffffff" font-weight="bold">Deployment</text>
+                    <text x="490" y="70" text-anchor="middle" fill="#ffffff" font-size="10">Manages Pods</text>
+                    <rect x="450" y="80" width="80" height="25" fill="#00ff00" opacity="0.4" stroke="#00ff00"/>
+                    <text x="490" y="95" text-anchor="middle" fill="#ffffff" font-size="9">Pod</text>
+                    <rect x="450" y="110" width="80" height="25" fill="#00ff00" opacity="0.4" stroke="#00ff00"/>
+                    <text x="490" y="125" text-anchor="middle" fill="#ffffff" font-size="9">Pod</text>
+                    
+                    <!-- Arrows -->
+                    <path d="M 180 95 L 230 95" stroke="#fff" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 370 95 L 420 95" stroke="#fff" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#fff"/>
+                        </marker>
+                    </defs>
+                    
+                    <text x="300" y="200" text-anchor="middle" fill="#ffffff" font-size="14">Container → Pod → Deployment</text>
+                </svg>
+                <div class="image-caption">Kubernetes Hierarchy</div>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h4>Container</h4>
+                    <p>The actual app in a box.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Pod</h4>
+                    <p>A logical unit that wraps one or more containers.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Deployment</h4>
+                    <p>The boss that creates and manages multiple Pods for scalability, healing and stability.</p>
+                </div>
+            </div>
+
+            <h3>Replica Set</h3>
+            <p>When we create a Deployment in Kubernetes:</p>
+            <ul>
+                <li>It automatically creates a ReplicaSet under the hood</li>
+                <li>That ReplicaSet is responsible for maintaining the desired number of Pod replicas</li>
+                <li>If a Pod crashes, gets deleted, or fails, the ReplicaSet will detect it and automatically recreate a new Pod</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Kubernetes Services</h2>
+            <p>A Service in Kubernetes is a way to give a fixed name and IP address to a group of Pods so other apps can find and talk to them easily — even if the Pods come and go or change their IPs. It also helps to share the traffic between those Pods (load balancing).</p>
+
+            <div class="image-container">
+                <svg width="650" height="300" viewBox="0 0 650 300">
+                    <rect width="650" height="300" fill="#1e1e3f" stroke="#333366" stroke-width="2"/>
+                    
+                    <!-- Service -->
+                    <rect x="275" y="50" width="100" height="60" fill="#ffd93d" opacity="0.7" stroke="#ffd93d" stroke-width="2"/>
+                    <text x="325" y="85" text-anchor="middle" fill="#000" font-weight="bold">Service</text>
+                    
+                    <!-- Pods -->
+                    <rect x="100" y="150" width="80" height="50" fill="#00ff00" opacity="0.6" stroke="#00ff00"/>
+                    <text x="140" y="180" text-anchor="middle" fill="#fff" font-size="12">Pod 1</text>
+                    
+                    <rect x="200" y="150" width="80" height="50" fill="#00ff00" opacity="0.6" stroke="#00ff00"/>
+                    <text x="240" y="180" text-anchor="middle" fill="#fff" font-size="12">Pod 2</text>
+                    
+                    <rect x="370" y="150" width="80" height="50" fill="#00ff00" opacity="0.6" stroke="#00ff00"/>
+                    <text x="410" y="180" text-anchor="middle" fill="#fff" font-size="12">Pod 3</text>
+                    
+                    <rect x="470" y="150" width="80" height="50" fill="#00ff00" opacity="0.6" stroke="#00ff00"/>
+                    <text x="510" y="180" text-anchor="middle" fill="#fff" font-size="12">Pod 4</text>
+                    
+                    <!-- Traffic lines -->
+                    <line x1="325" y1="110" x2="140" y2="150" stroke="#fff" stroke-width="2"/>
+                    <line x1="325" y1="110" x2="240" y2="150" stroke="#fff" stroke-width="2"/>
+                    <line x1="325" y1="110" x2="410" y2="150" stroke="#fff" stroke-width="2"/>
+                    <line x1="325" y1="110" x2="510" y2="150" stroke="#fff" stroke-width="2"/>
+                    
+                    <!-- External traffic -->
+                    <circle cx="325" cy="20" r="10" fill="#ff6b6b"/>
+                    <text x="325" y="25" text-anchor="middle" fill="#fff" font-size="8">Traffic</text>
+                    <line x1="325" y1="30" x2="325" y2="50" stroke="#ff6b6b" stroke-width="3"/>
+                    
+                    <text x="325" y="250" text-anchor="middle" fill="#ffffff" font-size="14">Service Load Balancing</text>
+                </svg>
+                <div class="image-caption">Service routing traffic to multiple Pods</div>
+            </div>
+
+            <h3>Service Types</h3>
+            <div class="service-types">
+                <div class="service-type">
+                    <h4>ClusterIP</h4>
+                    <p>Do not provide external access; they make the app accessible only within the Kubernetes cluster.</p>
+                </div>
+                <div class="service-type">
+                    <h4>NodePort</h4>
+                    <p>Expose the app on a static port on each node's IP address, allowing external access through those node IPs and ports.</p>
+                </div>
+                <div class="service-type">
+                    <h4>LoadBalancer</h4>
+                    <p>Create an external load balancer (usually in a cloud environment) that publicly exposes the app to the internet.</p>
+                </div>
+                <div class="service-type">
+                    <h4>ExternalName</h4>
+                    <p>Do not provide direct access; instead, they map the service to an external DNS name outside the cluster.</p>
+                </div>
+            </div>
+
+            <h3>Labels in Kubernetes Service</h3>
+            <p>A label is a tag added to Pods, and a Service uses a selector to match those labels. This tells the Service which Pods it should send traffic to. Services use labels to find which Pods to send traffic to, and Kubernetes automatically maps those labels to the current IPs of matching Pods.</p>
+        </div>
+
+        <div class="section">
+            <h2>Advanced Concepts</h2>
+
+            <h3>Ingress</h3>
+            <p>Ingress in Kubernetes is like a gate or reception desk for your application. It helps manage and route external traffic from the internet to the right service inside your Kubernetes cluster, providing smart routing, security (HTTPS), and a clean setup that avoids creating separate LoadBalancers for each app.</p>
+
+            <h3>ConfigMaps and Secrets</h3>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h4>ConfigMap</h4>
+                    <p>Used to store configuration data for your applications in key-value format. Useful when you don't want to hardcode settings like file paths, environment names, etc.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Secrets</h4>
+                    <p>Like a ConfigMap, but used to store sensitive data like passwords, API keys, and tokens. Data is base64 encoded for security.</p>
+                </div>
+            </div>
+
+            <h3>Environment Variables vs Volume Mount</h3>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h4>Environment Variable (env)</h4>
+                    <p>If you change it, you must restart the pod to see the new value. Environment variables are only read when the container starts.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Volume Mount</h4>
+                    <p>If you mount a file from a ConfigMap or Secret, the container can see updates automatically (within 1-2 minutes). No need to restart the pod.</p>
+                </div>
+            </div>
+
+            <h3>RBAC (Role-Based Access Control)</h3>
+            <p>A way to control who can do what in a Kubernetes cluster, providing security and access management.</p>
+
+            <h3>Monitoring with Prometheus & Grafana</h3>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h4>Prometheus</h4>
+                    <p>A monitoring tool that watches your Kubernetes cluster and collects metrics like CPU usage, memory usage, network traffic, and request counts.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Grafana</h4>
+                    <p>A visualization tool that takes data collected by Prometheus and shows it on dashboards using graphs, charts, and alerts.</p>
+                </div>
+            </div>
+
+            <h3>Custom Resources</h3>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h4>Custom Resource (CR)</h4>
+                    <p>Like creating your own type of object in Kubernetes. Beyond built-in types like Pod, Service, Deployment, you can create custom objects like "Database", "Backup", or "Website".</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Custom Resource Definition (CRD)</h4>
+                    <p>How you tell Kubernetes about your new type. It's like saying "Hey Kubernetes, I want to create a new kind of object called Database, with fields like engine, version, and size."</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Common Kubernetes Q&A</h2>
+            <div class="qa-section">
+                <div class="qa-item">
+                    <div class="question">Q1: Difference Between Docker and Kubernetes?</div>
+                    <div class="answer">Docker is a container platform where Kubernetes is a container orchestration environment that offers capabilities like auto healing, auto scaling, clustering and enterprise level support like load balancing.</div>
+                </div>
+
+                <div class="qa-item">
+                    <div class="question">Q2: Main components of Kubernetes architecture?</div>
+                    <div class="answer">Control Plane components: API Server, etcd, Scheduler, Controller Manager. Worker Node components: kubelet, kube-proxy, Container Runtime (e.g., containerd, CRI-O).</div>
+                </div>
+
+                <div class="qa-item">
+                    <div class="question">Q3: Main difference between Docker Swarm and Kubernetes?</div>
+                    <div class="answer">Kubernetes is better suited for large organizations as it offers more scalability, networking capabilities like policies and huge third party ecosystem support.</div>
+                </div>
+
+                <div class="qa-item">
+                    <div class="question">Q4: Main difference between Docker container and Kubernetes pod?</div>
+                    <div class="answer">Docker container: Runs one container, managed individually. Kubernetes pod: Can run multiple containers together as a single unit, managed by Kubernetes.</div>
+                </div>
+
+                <div class="qa-item">
+                    <div class="question">Q5: Namespace in Kubernetes</div>
+                    <div class="answer">Kubernetes cluster shared by two teams: Team A works in namespace team-a, Team B works in namespace team-b. Both can use the cluster without interfering with each other's resources.</div>
+                </div>
+
+                <div class="qa-item">
+                    <div class="question">Q6: What is Kube proxy?</div>
+                    <div class="answer">Kube-proxy is a network component in Kubernetes that routes and forwards traffic to the right pods inside the cluster, enabling communication between services and pods.</div>
+                </div>
+
+                <div class="qa-item">
+                    <div class="question">Q7: What are the different types of services within Kubernetes?</div>
+                    <div class="answer">Cluster IP, Node port Mode, Load Balancer Mode, ExternalName.</div>
+                </div>
+
+                <div class="qa-item">
+                    <div class="question">Q8: Difference between NodePort and LoadBalancer</div>
+                    <div class="answer">NodePort exposes a Kubernetes service on a fixed port on every node's IP address, allowing you to access the service using NodeIP:NodePort. It works without a cloud provider but requires manual management of external traffic. LoadBalancer, on the other hand, automatically provisions an external load balancer (usually from a cloud provider) with a public IP address that distributes traffic to the service, making it easier to access and scale without manual setup.</div>
+                </div>
+
+                <div class="qa-item">
+                    <div class="question">Q9: What is the role of kubelet?</div>
+                    <div class="answer">The kubelet is an agent that runs on every Kubernetes node. Its main job is to make sure containers are running inside pods as specified by the Kubernetes control plane. It communicates with the master node, manages pod lifecycle, and reports the node's status back to the cluster.</div>
+                </div>
+
+                <div class="qa-item">
+                    <div class="question">Q10: Day to day Activities on Kubernetes</div>
+                    <div class="answer">On a typical day, you deploy applications using YAML files or Helm charts, and regularly check the status of pods, nodes, and services. You update or roll out new versions of your apps, debug issues by viewing logs, and scale applications up or down as needed. You organize resources using namespaces, monitor the health and resource usage of the cluster, and configure networking and storage. Additionally, you manage security policies, back up important data, and occasionally upgrade the Kubernetes cluster components.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

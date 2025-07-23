@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Use Terraform and Ansible - Mohd Aasif</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="blog-container">
+        <a href="../index.html#blog" class="back-button">
+            ← Back to Blog
+        </a>
+        
+        <article>
+            <header class="blog-header">
+                <h1 class="blog-title">How to Use Terraform and Ansible to Create Infrastructure</h1>
+                <div class="blog-meta">
+                    June 8, 2025 • 8 min read • DevOps, Infrastructure as Code
+                </div>
+            </header>
+            
+            <div class="blog-content">
+                <p>
+                    This comprehensive guide covers everything you need to know about combining Terraform and Ansible 
+                    to create and manage infrastructure efficiently. We'll explore how these tools complement each other 
+                    and walk through a practical example.
+                </p>
+                
+                <h2>Why Terraform + Ansible?</h2>
+                <p>
+                    Terraform excels at provisioning infrastructure, while Ansible shines at configuration management. 
+                    Together, they form a powerful combination:
+                </p>
+                <ul>
+                    <li><strong>Terraform:</strong> Creates cloud resources (VMs, networks, storage)</li>
+                    <li><strong>Ansible:</strong> Configures those resources (install software, deploy apps)</li>
+                </ul>
+                
+                <h2>Prerequisites</h2>
+                <p>Before we begin, make sure you have:</p>
+                <ul>
+                    <li>Terraform installed (v1.0+)</li>
+                    <li>Ansible installed (v2.9+)</li>
+                    <li>AWS CLI configured with credentials</li>
+                    <li>Basic knowledge of YAML and HCL</li>
+                </ul>
+                
+                <h2>Step 1: Define Infrastructure with Terraform</h2>
+                <p>Let's create a simple AWS infrastructure with an EC2 instance:</p>
+                
+                <pre><code># main.tf
+provider "aws" {
+  region = "us-east-1"
+}
+
+# Create VPC
+resource "aws_vpc" "main" {
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+
+  tags = {
+    Name = "main-vpc"
+  }
+}
+
+# Create Internet Gateway
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "main-igw"
+  }
+}
+
+# Create Subnet
+resource "aws_subnet" "public" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "us-east-1a"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "public-subnet"
+  }
+}
+
+# Create Route Table
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+
+  tags = {
+    Name = "public-route-table"
+  }
+}
+
+# Associate Route Table with Subnet
+resource "aws_route_table_association" "public" {
+  subnet_id      = aws_subnet.public.id
+  route_table_id = aws_route_table.public.id
+}
+
+# Create Security Group
+resource "aws_security_group" "web" {
+  name        = "web-security-group"
+  description = "Security group for web servers"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "web-security-group"
+  }
+}
+
+# Create EC2 Instance
+resource "aws_instance" "web_server" {
+  ami           = "ami-0c55b159cbfafe1f0" # Ubuntu 20.04 LTS
+  instance_type = "t2.micro"
+  key_name      = "my-key-pair"
+  subnet_id     = aws_subnet.public.id
+  
+  vpc_security_group_ids = [aws_security_group.web.id]
+  
+  tags = {
+    Name        = "WebServer"
+    Environment = "Dev"
+  }
+}
+
+# Output the public IP
+output "instance_ip" {
+  value = aws_instance.web_server.public_ip
+}</code></pre>
+                
+                <h2>Step 2: Create Ansible Inventory</h2>
+                <p>
+                    After Terraform creates the infrastructure, we need to tell Ansible about our new server. 
+                    We'll use a dynamic inventory:
+                </p>
+                
+                <pre><code># inventory.ini
+[webservers]
+${instance_ip} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/my-key.pem</code></pre>
+                
+                <h2>Step 3: Write Ansible Playbook</h2>
+                <p>Now let's create a playbook to configure our server:</p>
+                
+                <pre><code># deploy.yml
+---
+- name: Configure Web Server
+  hosts: webservers
+  become: yes
+  
+  vars:
+    domain_name: example.com
+    app_user: webapp
+    app_dir: /var/www/app
+  
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+        
+    - name: Install required packages
+      apt:
+        name:
+          - nginx
+          - python3-pip
+          - python3-venv
+          - git
+          - postgresql-client
+          - redis-tools
+        state: present
+        
+    - name: Create app user
+      user:
+        name: "{{ app_user }}"
+        shell: /bin/bash
+        home: /home/{{ app_user }}
+        create_home: yes
+        
+    - name: Create application directory
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: '0755'
+        
+    - name: Configure Nginx
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/sites-available/{{ domain_name }}
+      notify: restart nginx
+      
+    - name: Enable Nginx site
+      file:
+        src: /etc/nginx/sites-available/{{ domain_name }}
+        dest: /etc/nginx/sites-enabled/{{ domain_name }}
+        state: link
+      notify: restart nginx
+      
+    - name: Remove default Nginx site
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      notify: restart nginx
+        
+    - name: Start and enable Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+        
+    - name: Configure firewall
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+        proto: tcp
+      loop:
+        - '22'
+        - '80'
+        - '443'
+        
+    - name: Enable UFW
+      ufw:
+        state: enabled
+        policy: deny
+        direction: incoming
+        
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted</code></pre>
+                
+                <h3>Nginx Configuration Template</h3>
+                <p>Create a template file `nginx.conf.j2`:</p>
+                
+                <pre><code># nginx.conf.j2
+server {
+    listen 80;
+    server_name {{ domain_name }} www.{{ domain_name }};
+    
+    root {{ app_dir }}/public;
+    index index.html index.htm;
+    
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+    
+    location / {
+        try_files $uri $uri/ @app;
+    }
+    
+    location @app {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}</code></pre>
+                
+                <h2>Step 4: Automate with Scripts</h2>
+                <p>Create a deployment script to tie everything together:</p>
+                
+                <pre><code>#!/bin/bash
+# deploy.sh
+
+set -e  # Exit on error
+
+echo "🚀 Starting infrastructure deployment..."
+
+# Initialize Terraform
+echo "📦 Initializing Terraform..."
+terraform init
+
+# Plan Terraform changes
+echo "📋 Planning infrastructure changes..."
+terraform plan -out=tfplan
+
+# Apply Terraform
+echo "🏗️  Creating infrastructure..."
+terraform apply tfplan
+
+# Get the IP address
+IP=$(terraform output -raw instance_ip)
+echo "✅ Infrastructure created! Server IP: $IP"
+
+# Update Ansible inventory
+echo "📝 Updating Ansible inventory..."
+cat > inventory.ini << EOF
+[webservers]
+$IP ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/my-key.pem
+EOF
+
+# Wait for instance to be ready
+echo "⏳ Waiting for instance to be ready..."
+for i in {1..30}; do
+    if ssh -o StrictHostKeyChecking=no -i ~/.ssh/my-key.pem ubuntu@$IP exit 2>/dev/null; then
+        echo "✅ Instance is ready!"
+        break
+    fi
+    echo "Waiting... ($i/30)"
+    sleep 10
+done
+
+# Run Ansible
+echo "⚙️  Configuring server with Ansible..."
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.ini deploy.yml
+
+echo "🎉 Deployment complete! Your server is ready at http://$IP"</code></pre>
+                
+                <h2>Step 5: Advanced Integration</h2>
+                <p>For a more integrated approach, you can use Terraform to automatically run Ansible:</p>
+                
+                <pre><code># main.tf (additional configuration)
+resource "null_resource" "ansible_provisioner" {
+  depends_on = [aws_instance.web_server]
+  
+  triggers = {
+    instance_id = aws_instance.web_server.id
+  }
+  
+  provisioner "local-exec" {
+    command = <<-EOT
+      echo "[webservers]" > inventory.ini
+      echo "${aws_instance.web_server.public_ip} ansible_user=ubuntu" >> inventory.ini
+      ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.ini deploy.yml
+    EOT
+  }
+}</code></pre>
+                
+                <h2>Best Practices</h2>
+                
+                <h3>1. State Management</h3>
+                <p>Store Terraform state remotely for team collaboration:</p>
+                <pre><code># backend.tf
+terraform {
+  backend "s3" {
+    bucket = "my-terraform-state"
+    key    = "infrastructure/terraform.tfstate"
+    region = "us-east-1"
+    
+    dynamodb_table = "terraform-locks"
+    encrypt        = true
+  }
+}</code></pre>
+                
+                <h3>2. Variable Management</h3>
+                <p>Use variables for flexibility:</p>
+                <pre><code># variables.tf
+variable "instance_type" {
+  description = "EC2 instance type"
+  default     = "t2.micro"
+}
+
+variable "environment" {
+  description = "Environment name"
+  default     = "dev"
+}
+
+# terraform.tfvars
+instance_type = "t2.small"
+environment   = "production"</code></pre>
+                
+                <h3>3. Ansible Vault for Secrets</h3>
+                <pre><code># Encrypt sensitive data
+ansible-vault create secrets.yml
+
+# Use in playbook
+- name: Deploy application
+  hosts: webservers
+  vars_files:
+    - secrets.yml
+  tasks:
+    - name: Set database password
+      lineinfile:
+        path: /etc/app/config
+        line: "DB_PASSWORD={{ db_password }}"</code></pre>
+                
+                <h3>4. Error Handling</h3>
+                <pre><code># Ansible error handling
+- name: Check if service is running
+  command: systemctl is-active nginx
+  register: service_status
+  failed_when: false
+  changed_when: false
+
+- name: Start service if not running
+  service:
+    name: nginx
+    state: started
+  when: service_status.rc != 0</code></pre>
+                
+                <h2>Monitoring and Maintenance</h2>
+                <p>After deployment, set up monitoring:</p>
+                
+                <pre><code># monitoring.yml
+- name: Install monitoring agents
+  hosts: webservers
+  tasks:
+    - name: Install Prometheus Node Exporter
+      apt:
+        name: prometheus-node-exporter
+        state: present
+        
+    - name: Configure CloudWatch agent
+      shell: |
+        wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+        dpkg -i amazon-cloudwatch-agent.deb
+        
+    - name: Start monitoring services
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - prometheus-node-exporter
+        - amazon-cloudwatch-agent</code></pre>
+                
+                <h2>Conclusion</h2>
+                <p>
+                    By combining Terraform and Ansible, you can create a powerful Infrastructure as Code pipeline. 
+                    Terraform handles the "what" (what resources to create), while Ansible handles the "how" 
+                    (how to configure them).
+                </p>
+                
+                <p>
+                    This approach gives you reproducible, version-controlled infrastructure that can be 
+                    deployed consistently across different environments. Remember to always test your configurations 
+                    in a development environment before applying to production!
+                </p>
+                
+                <h3>Key Takeaways:</h3>
+                <ul>
+                    <li>Use Terraform for infrastructure provisioning</li>
+                    <li>Use Ansible for configuration management</li>
+                    <li>Automate the entire process with scripts</li>
+                    <li>Store state remotely for collaboration</li>
+                    <li>Use variables and vault for flexibility and security</li>
+                    <li>Always implement proper error handling</li>
+                </ul>
+            </div>
+        </article>
+    </div>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jenkins CI/CD Pipeline with GitHub Integration - Mohd Aasif</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* Blog-specific styles matching the sample */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        .blog-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            min-height: 100vh;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin: 20px;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+
+        .blog-header {
+            padding: 40px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .blog-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            line-height: 1.2;
+        }
+
+        .blog-meta {
+            color: #666666;
+            font-size: 14px;
+        }
+
+        .blog-content {
+            padding: 40px;
+            color: #333333;
+        }
+
+        .blog-content h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 40px 0 20px 0;
+            color: #2c3e50;
+        }
+
+        .blog-content h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 30px 0 15px 0;
+            color: #34495e;
+        }
+
+        .blog-content p {
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.7;
+            color: #333333;
+        }
+
+        .blog-content ul {
+            margin: 20px 0;
+            padding-left: 30px;
+            color: #333333;
+        }
+
+        .blog-content li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+            color: #333333;
+        }
+
+        .blog-content li strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 16px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        code {
+            color: #e83e8c;
+            font-size: 87.5%;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        pre code {
+            color: #212529;
+            font-size: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="blog-container">
+        <a href="../index.html#blog" class="back-button">
+            ← Back to Blog
+        </a>
+        
+        <article>
+            <header class="blog-header">
+                <h1 class="blog-title">Jenkins CI/CD Pipeline with GitHub Integration: A DevOps Project</h1>
+                <div class="blog-meta">
+                    January 15, 2025 • 10 min read • DevOps, Jenkins, Docker, CI/CD
+                </div>
+            </header>
+            
+            <div class="blog-content">
+                <p>
+                    In this blog post, I'll walk you through the setup and configuration of a Jenkins CI/CD pipeline 
+                    with GitHub integration on AWS EC2. This setup demonstrates essential DevOps practices including 
+                    infrastructure provisioning, tool installation and configuration, containerization with Docker, 
+                    and pipeline automation for continuous integration and deployment.
+                </p>
+                
+                <h2>Setup Overview</h2>
+                <p>
+                    This setup involved configuring a complete CI/CD pipeline environment using Jenkins on AWS EC2. 
+                    The pipeline setup includes installing and configuring Jenkins, Docker integration, and creating 
+                    automated build processes for a Node.js application. This configuration forms the foundation for 
+                    continuous integration and deployment workflows commonly used in production environments.
+                </p>
+                
+                <h2>Infrastructure Setup</h2>
+                <p>
+                    The first step was setting up the infrastructure on AWS EC2. I chose Ubuntu as the operating system 
+                    for this project due to its excellent support for Docker and Jenkins.
+                </p>
+                
+                <h3>Initial System Configuration</h3>
+                <p>After launching the EC2 instance, I started with updating the system packages:</p>
+                
+                <pre><code>sudo apt update</code></pre>
+                
+                <h3>Java Installation for Jenkins</h3>
+                <p>Since Jenkins requires Java to run, I installed OpenJDK 11:</p>
+                
+                <pre><code>sudo apt install openjdk-11-jre
+java -version</code></pre>
+                
+                <h2>Jenkins Installation and Configuration</h2>
+                <p>
+                    Installing Jenkins required adding the official Jenkins repository and importing the GPG key 
+                    for package verification.
+                </p>
+                
+                <h3>Repository Setup</h3>
+                <pre><code>curl -fsSL https://pkg.jenkins.io/debian/jenkins.io.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null 
+
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null</code></pre>
+                
+                <h3>Jenkins Installation</h3>
+                <pre><code>sudo apt-get update 
+sudo apt-get install jenkins</code></pre>
+                
+                <h3>Service Configuration</h3>
+                <p>After installation, I configured Jenkins to start automatically on system boot:</p>
+                
+                <pre><code>sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins</code></pre>
+                
+                <h3>Initial Admin Password</h3>
+                <p>To access the Jenkins web interface for the first time, I retrieved the initial admin password:</p>
+                
+                <pre><code>sudo cat /var/lib/jenkins/secrets/initialAdminPassword</code></pre>
+                
+                <h2>Docker Integration</h2>
+                <p>
+                    Docker was essential for this project as it enables consistent application deployment across 
+                    different environments. I installed Docker and configured it to work seamlessly with Jenkins.
+                </p>
+                
+                <h3>Docker Installation</h3>
+                <pre><code>sudo apt install docker.io</code></pre>
+                
+                <h3>User Permissions</h3>
+                <p>To allow Jenkins to execute Docker commands, I added the user to the Docker group:</p>
+                
+                <pre><code>sudo usermod -a -G docker $USER</code></pre>
+                
+                <h2>Application Containerization</h2>
+                <p>
+                    For this project, I used a Node.js application. The Dockerfile defines how the application 
+                    is packaged into a container:
+                </p>
+                
+                <pre><code># Dockerfile
+FROM node:12.2.0-alpine
+WORKDIR app
+COPY . .
+RUN npm install
+EXPOSE 8000
+CMD ["node","app.js"]</code></pre>
+                
+                <h3>Local Testing</h3>
+                <p>Before setting up the automated pipeline, I tested the Docker build process locally:</p>
+                
+                <pre><code>docker build . -t node-app
+docker run -d --name node-todo-app -p 8000:8000 todo-node-app</code></pre>
+                
+                <h2>Pipeline Setup Configuration</h2>
+                <p>
+                    The final step was configuring Jenkins to create an automated build pipeline. I set up a freestyle 
+                    project in Jenkins and configured the build steps to handle Docker operations and application deployment.
+                </p>
+                
+                <h3>Build Script</h3>
+                <p>In the Jenkins job configuration, I added an "Execute shell" build step with these commands:</p>
+                
+                <pre><code>docker build . -t node-app-todo
+docker run -d --name node-app-container -p 8000:8000 node-app-todo</code></pre>
+                
+                <h2>GitHub Webhook Integration</h2>
+                <p>
+                    To automate the build process, I configured GitHub webhooks to trigger Jenkins builds automatically 
+                    whenever code is pushed to the repository. This integration eliminates the need for manual build 
+                    triggers and creates a truly automated CI/CD pipeline.
+                </p>
+                
+                <h3>Jenkins Configuration for Webhooks</h3>
+                <p>First, I configured the Jenkins job to accept webhook triggers:</p>
+                
+                <ul>
+                    <li>In the Jenkins job configuration, I enabled "GitHub hook trigger for GITScm polling"</li>
+                    <li>Added the GitHub repository URL in the Source Code Management section</li>
+                    <li>Configured credentials for GitHub access if the repository is private</li>
+                </ul>
+                
+                <h3>GitHub Webhook Setup</h3>
+                <p>On the GitHub repository side, I configured the webhook to notify Jenkins of code changes:</p>
+                
+                <ul>
+                    <li><strong>Webhook URL:</strong> Set to <code>http://your-jenkins-url:8080/github-webhook/</code></li>
+                    <li><strong>Content Type:</strong> Selected "application/json"</li>
+                    <li><strong>Events:</strong> Configured to trigger on "push" events</li>
+                    <li><strong>Active:</strong> Ensured the webhook is active</li>
+                </ul>
+                
+                <h3>Security Considerations</h3>
+                <p>
+                    When setting up webhooks, several security measures were important to consider:
+                </p>
+                
+                <ul>
+                    <li>Using HTTPS for webhook URLs in production environments</li>
+                    <li>Configuring webhook secrets for payload verification</li>
+                    <li>Restricting Jenkins access through proper firewall rules</li>
+                    <li>Using GitHub personal access tokens for authentication</li>
+                </ul>
+                
+                <h3>Testing the Integration</h3>
+                <p>
+                    After configuring both sides, I tested the integration by making a code change and pushing to GitHub. 
+                    The webhook successfully triggered the Jenkins build, which then executed the Docker commands to build 
+                    and deploy the updated application. This confirmed that the automated CI/CD pipeline was working correctly.
+                </p>
+                
+                <h2>Setup Challenges and Solutions</h2>
+                <p>
+                    During this pipeline setup, I encountered several configuration challenges that provided valuable 
+                    learning experiences in DevOps tooling:
+                </p>
+                
+                <ul>
+                    <li><strong>Permission Issues:</strong> Initially, Jenkins couldn't execute Docker commands due to permission restrictions. Adding the Jenkins user to the Docker group resolved this issue.</li>
+                    <li><strong>Port Conflicts:</strong> Managing port conflicts when running multiple containers required careful planning of port assignments.</li>
+                    <li><strong>Security Considerations:</strong> Configuring proper security groups on AWS and securing Jenkins access were crucial for production readiness.</li>
+                    <li><strong>Resource Management:</strong> Monitoring EC2 instance resources to ensure adequate performance for both Jenkins and Docker containers.</li>
+                </ul>
+                
+                <h2>Production Considerations</h2>
+                <p>
+                    While this project demonstrates the core concepts, several enhancements would be necessary for 
+                    production deployment:
+                </p>
+                
+                <ul>
+                    <li>Implementing proper backup strategies for Jenkins configuration</li>
+                    <li>Setting up monitoring and alerting for the CI/CD pipeline</li>
+                    <li>Using Docker registries for image management</li>
+                    <li>Implementing security scanning in the pipeline</li>
+                    <li>Adding automated testing stages</li>
+                    <li>Configuring multi-environment deployments</li>
+                </ul>
+                
+                <h2>Skills and Technologies Configured</h2>
+                <p>
+                    This pipeline setup demonstrated proficiency in configuring and integrating several key DevOps 
+                    technologies and tools:
+                </p>
+                
+                <ul>
+                    <li><strong>Cloud Infrastructure:</strong> AWS EC2 instance management and configuration</li>
+                    <li><strong>Containerization:</strong> Docker image creation and container lifecycle management</li>
+                    <li><strong>CI/CD Tools:</strong> Jenkins installation, configuration, and job creation</li>
+                    <li><strong>Linux Administration:</strong> System updates, service management, and user permissions</li>
+                    <li><strong>Version Control Integration:</strong> GitHub integration for automated builds</li>
+                    <li><strong>Automation:</strong> Automated build and deployment processes</li>
+                </ul>
+                
+                <h2>Conclusion</h2>
+                <p>
+                    This Jenkins CI/CD pipeline setup provided hands-on experience with essential DevOps tool configuration 
+                    and integration. The automated pipeline setup from infrastructure provisioning to build automation represents 
+                    a fundamental DevOps workflow that organizations implement to streamline their software delivery processes.
+                </p>
+                
+                <p>
+                    The setup demonstrates the importance of proper tool configuration, infrastructure management, and integration 
+                    of various DevOps technologies. These configuration skills are directly transferable to production environments 
+                    and provide the groundwork for implementing more sophisticated CI/CD pipelines and deployment strategies.
+                </p>
+            </div>
+        </article>
+    </div>
+</body>
+</html>

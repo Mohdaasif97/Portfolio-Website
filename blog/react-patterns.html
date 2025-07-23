@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern React Patterns - Mohd Aasif</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="blog-container">
+        <a href="../index.html#blog" class="back-button">
+            ← Back to Blog
+        </a>
+        
+        <article>
+            <header class="blog-header">
+                <h1 class="blog-title">Modern React Patterns: Hooks, Context, and Performance</h1>
+                <div class="blog-meta">
+                    December 10, 2024 • 10 min read • React, JavaScript, Web Development
+                </div>
+            </header>
+            
+            <div class="blog-content">
+                <p>
+                    React has evolved significantly over the years, and with the introduction of hooks and improved context API, 
+                    the way we write React applications has fundamentally changed. This guide explores modern patterns that will 
+                    help you write more maintainable and performant React applications.
+                </p>
+                
+                <h2>The Power of Custom Hooks</h2>
+                <p>
+                    Custom hooks are one of the most powerful patterns in modern React. They allow you to extract component 
+                    logic into reusable functions, making your code more modular and testable.
+                </p>
+                
+                <h3>Example: useLocalStorage Hook</h3>
+                <pre><code>function useLocalStorage(key, initialValue) {
+  const [storedValue, setStoredValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.error(`Error loading localStorage key "${key}":`, error);
+      return initialValue;
+    }
+  });
+
+  const setValue = (value) => {
+    try {
+      setStoredValue(value);
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error(`Error saving localStorage key "${key}":`, error);
+    }
+  };
+
+  return [storedValue, setValue];
+}</code></pre>
+                
+                <h2>Context API Best Practices</h2>
+                <p>
+                    The Context API is powerful but can lead to performance issues if not used correctly. Here's how to 
+                    optimize your context usage:
+                </p>
+                
+                <h3>Split Contexts by Concern</h3>
+                <pre><code>// Bad: One large context
+const AppContext = React.createContext({
+  user: null,
+  theme: 'light',
+  notifications: [],
+  // ... many more values
+});
+
+// Good: Separate contexts
+const UserContext = React.createContext(null);
+const ThemeContext = React.createContext('light');
+const NotificationContext = React.createContext([]);</code></pre>
+                
+                <h3>Optimize Context Providers</h3>
+                <pre><code>// Use useMemo to prevent unnecessary re-renders
+function UserProvider({ children }) {
+  const [user, setUser] = useState(null);
+  
+  const value = useMemo(
+    () => ({ user, setUser }),
+    [user]
+  );
+  
+  return (
+    &lt;UserContext.Provider value={value}&gt;
+      {children}
+    &lt;/UserContext.Provider&gt;
+  );
+}</code></pre>
+                
+                <h2>Performance Optimization Patterns</h2>
+                <p>
+                    React provides several built-in optimization techniques. Here are the most important ones:
+                </p>
+                
+                <h3>1. Memoization with React.memo</h3>
+                <pre><code>const ExpensiveComponent = React.memo(({ data, onUpdate }) => {
+  // Component only re-renders if props change
+  return &lt;div&gt;{/* Expensive render */}&lt;/div&gt;;
+}, (prevProps, nextProps) => {
+  // Custom comparison function (optional)
+  return prevProps.data.id === nextProps.data.id;
+});</code></pre>
+                
+                <h3>2. useCallback for Stable References</h3>
+                <pre><code>function ParentComponent() {
+  const [count, setCount] = useState(0);
+  
+  // Without useCallback, this creates a new function every render
+  const handleClick = useCallback(() => {
+    setCount(c => c + 1);
+  }, []); // Empty deps = stable reference
+  
+  return &lt;ChildComponent onClick={handleClick} /&gt;;
+}</code></pre>
+                
+                <h3>3. useMemo for Expensive Computations</h3>
+                <pre><code>function DataTable({ items, sortKey }) {
+  const sortedItems = useMemo(() => {
+    console.log('Sorting items...');
+    return [...items].sort((a, b) => {
+      return a[sortKey] > b[sortKey] ? 1 : -1;
+    });
+  }, [items, sortKey]); // Only re-sort when dependencies change
+  
+  return (
+    &lt;table&gt;
+      {sortedItems.map(item => (
+        &lt;TableRow key={item.id} item={item} /&gt;
+      ))}
+    &lt;/table&gt;
+  );
+}</code></pre>
+                
+                <h2>Code Splitting and Lazy Loading</h2>
+                <p>
+                    For larger applications, code splitting is essential for performance:
+                </p>
+                
+                <pre><code>// Lazy load routes
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Profile = lazy(() => import('./pages/Profile'));
+
+function App() {
+  return (
+    &lt;Suspense fallback={&lt;LoadingSpinner /&gt;}&gt;
+      &lt;Routes&gt;
+        &lt;Route path="/dashboard" element={&lt;Dashboard /&gt;} /&gt;
+        &lt;Route path="/profile" element={&lt;Profile /&gt;} /&gt;
+      &lt;/Routes&gt;
+    &lt;/Suspense&gt;
+  );
+}</code></pre>
+                
+                <h2>Error Boundaries</h2>
+                <p>
+                    Error boundaries are React components that catch JavaScript errors in their child component tree:
+                </p>
+                
+                <pre><code>class ErrorBoundary extends React.Component {
+  state = { hasError: false, error: null };
+  
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  
+  componentDidCatch(error, errorInfo) {
+    console.error('Error caught by boundary:', error, errorInfo);
+    // Log to error reporting service
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return &lt;ErrorFallback error={this.state.error} /&gt;;
+    }
+    
+    return this.props.children;
+  }
+}</code></pre>
+                
+                <h2>Conclusion</h2>
+                <p>
+                    Modern React patterns focus on performance, reusability, and maintainability. By leveraging hooks, 
+                    optimizing context usage, and implementing proper memoization strategies, you can build React applications 
+                    that scale efficiently. Remember, premature optimization is the root of all evil - profile first, 
+                    then optimize where it matters.
+                </p>
+                
+                <h3>Key Takeaways:</h3>
+                <ul>
+                    <li>Use custom hooks to extract and share component logic</li>
+                    <li>Split contexts by concern to avoid unnecessary re-renders</li>
+                    <li>Leverage React.memo, useCallback, and useMemo wisely</li>
+                    <li>Implement code splitting for better initial load times</li>
+                    <li>Always use error boundaries in production applications</li>
+                </ul>
+            </div>
+        </article>
+    </div>
+</body>
+</html>
